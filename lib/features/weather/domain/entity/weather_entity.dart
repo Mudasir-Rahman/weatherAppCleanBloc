@@ -8,14 +8,21 @@ import 'package:equatable/equatable.dart';
 final   String iconCode;
   final int  humidity;
   final double windSpeed;
- const  WeatherEntity({
+  final int pressure;
+  final int windDeg;
+  final String dayName;
+  const  WeatherEntity({
     required this.cityName,
      required this.temperature,
      required this.description,
      required this.iconCode,
      required this.humidity,
      required this.windSpeed,
+    required this.pressure,
+    required this.windDeg,
+    required this.dayName,
+
 });
    @override
-  List<Object?> get props =>[cityName,temperature,description,iconCode,humidity,windSpeed];
+  List<Object?> get props =>[cityName,temperature,description,iconCode,humidity,windSpeed,pressure,windDeg,dayName];
 }

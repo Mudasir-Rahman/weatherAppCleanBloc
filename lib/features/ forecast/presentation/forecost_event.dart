@@ -1,18 +1,26 @@
 import 'package:equatable/equatable.dart';
 
-abstract class ForecostEvent extends Equatable{
+abstract class ForecostEvent extends Equatable {
   const ForecostEvent();
+
   @override
-  List<Object?>get props=> [];
+  List<Object?> get props => [];
 }
-class GetForecostByCity extends ForecostEvent{
+
+class GetForecastByCityEvent extends ForecostEvent {
   final String cityName;
-  const GetForecostByCity({required this.cityName});
+
+  const GetForecastByCityEvent({
+    required this.cityName,
+  });
+
   @override
-  List<Object?>get props=>[cityName];
+  List<Object?> get props => [cityName];
 }
-class GetForecostByLocation extends ForecostEvent{
- const  GetForecostByLocation();
- @override
-  List<Object?>get props=>[];
+
+class GetForecastByLocationEvent extends ForecostEvent {
+  const GetForecastByLocationEvent();
+
+  @override
+  List<Object?> get props => [];
 }

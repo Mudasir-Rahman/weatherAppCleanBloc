@@ -10,6 +10,9 @@ class WeatherModel extends WeatherEntity{
   required super.iconCode,
     required super.humidity,
     required super.windSpeed,
+    required super.pressure,
+    required super.windDeg,
+    required super.dayName,
   });
 
 // Convert from JSON (API response)
@@ -22,6 +25,9 @@ cityName: json['city_name']?? json['name'] ?? '',
     iconCode: json['icon_code'] ?? json['weather'][0]['icon'] ?? '',
     humidity: json['humidity'] ?? json['main']['humidity'] ?? 0,
     windSpeed: (json['wind_speed'] ?? json['wind']['speed'] ?? 0).toDouble(),
+    pressure: json['pressure'] ?? json['main']['pressure'] ?? 0,
+    windDeg: json['wind_deg'] ?? json['wind']['deg'] ?? 0,
+    dayName: json['day_name'] ?? '',
 
   );}
   // convert to json
@@ -33,6 +39,9 @@ Map<String , dynamic> toJson(){
     'icon_code': iconCode,
     'humidity': humidity,
     'wind_speed': windSpeed,
+    'pressure': pressure,
+    'wind_deg': windDeg,
+    'day_name': dayName,
 
   };
   }

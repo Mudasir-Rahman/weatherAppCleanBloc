@@ -103,7 +103,6 @@ class WeatherCard extends StatelessWidget {
                 ],
               ),
             ),
-          ),
         ],
       ),
     );

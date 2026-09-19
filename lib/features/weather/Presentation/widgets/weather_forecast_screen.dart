@@ -37,7 +37,9 @@ class _WeatherForecastScreenState extends State<WeatherForecastScreen> {
   void _searchCity(String cityName) {
     if (cityName.isNotEmpty) {
       context.read<WeatherBloc>().add(FetchWeatherEvent(cityName: cityName));
-      context.read<ForecastBloc>().add(GetForecastByCityEvent(cityName: cityName));
+      context.read<ForecastBloc>().add(
+        GetForecastByCityEvent(cityName: cityName),
+      );
     }
   }
 
@@ -50,9 +52,7 @@ class _WeatherForecastScreenState extends State<WeatherForecastScreen> {
 
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
-          gradient: gradient,
-        ),
+        decoration: BoxDecoration(gradient: gradient),
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.all(16),
@@ -68,9 +68,7 @@ class _WeatherForecastScreenState extends State<WeatherForecastScreen> {
                   child: BlocBuilder<WeatherBloc, WeatherState>(
                     builder: (context, weatherState) {
                       if (weatherState is WeatherLoading) {
-                        return const Center(
-                          child: CircularProgressIndicator(),
-                        );
+                        return const Center(child: CircularProgressIndicator());
                       }
                       if (weatherState is WeatherLoaded) {
                         return BlocBuilder<ForecastBloc, ForecostState>(
@@ -93,13 +91,17 @@ class _WeatherForecastScreenState extends State<WeatherForecastScreen> {
                               Icon(
                                 Icons.error_outline,
                                 size: 48,
-                                color: isDark ? Colors.white70 : Colors.grey.shade600,
+                                color: isDark
+                                    ? Colors.white70
+                                    : Colors.grey.shade600,
                               ),
                               const SizedBox(height: 8),
                               Text(
                                 weatherState.message,
                                 style: TextStyle(
-                                  color: isDark ? Colors.white70 : Colors.grey.shade600,
+                                  color: isDark
+                                      ? Colors.white70
+                                      : Colors.grey.shade600,
                                 ),
                                 textAlign: TextAlign.center,
                               ),
@@ -153,28 +155,48 @@ class _WeatherForecastScreenState extends State<WeatherForecastScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          'Weather',
-          style: TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
-            color: isDark ? Colors.white : Colors.black87,
-          ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'SkyCast',
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.w800,
+                color: isDark ? Colors.white : Colors.black87,
+                letterSpacing: -0.8,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              'Live weather dashboard',
+              style: TextStyle(
+                fontSize: 12,
+                color: isDark ? Colors.white70 : Colors.black54,
+                letterSpacing: 0.6,
+              ),
+            ),
+          ],
         ),
         GestureDetector(
           onTap: () => context.read<ThemeCubit>().toggleTheme(),
           child: Container(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: isDark
                   ? Colors.white.withOpacity(0.1)
-                  : Colors.black.withOpacity(0.05),
-              borderRadius: BorderRadius.circular(12),
+                  : Colors.black.withOpacity(0.06),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: isDark
+                    ? Colors.white.withOpacity(0.1)
+                    : Colors.black.withOpacity(0.04),
+              ),
             ),
             child: Icon(
-              isDark ? Icons.light_mode : Icons.dark_mode,
+              isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
               color: isDark ? Colors.white : Colors.black87,
-              size: 24,
+              size: 22,
             ),
           ),
         ),

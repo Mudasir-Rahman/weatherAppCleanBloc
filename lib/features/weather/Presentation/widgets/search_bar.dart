@@ -20,22 +20,29 @@ class _WeatherSearchBarState extends State<WeatherSearchBar> {
       children: [
         Expanded(
           child: Container(
+            height: 52,
             decoration: BoxDecoration(
-              color: isDark
-                  ? Colors.white.withOpacity(0.1)
-                  : Colors.white,
-              borderRadius: BorderRadius.circular(8),
+              color: isDark ? Colors.white.withOpacity(0.08) : Colors.white,
+              borderRadius: BorderRadius.circular(16),
               border: Border.all(
                 color: isDark
-                    ? Colors.white.withOpacity(0.2)
-                    : Colors.grey.shade300,
-                width: 0.5,
+                    ? Colors.white.withOpacity(0.12)
+                    : Colors.grey.shade200,
+                width: 1,
               ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(isDark ? 0.18 : 0.04),
+                  blurRadius: 12,
+                  offset: const Offset(0, 6),
+                ),
+              ],
             ),
             child: TextField(
               controller: _controller,
               style: TextStyle(
                 color: isDark ? Colors.white : Colors.black87,
+                fontSize: 15,
               ),
               decoration: InputDecoration(
                 hintText: 'Search city...',
@@ -43,8 +50,16 @@ class _WeatherSearchBarState extends State<WeatherSearchBar> {
                   color: isDark ? Colors.white54 : Colors.grey.shade500,
                   fontSize: 14,
                 ),
+                prefixIcon: Icon(
+                  Icons.search_rounded,
+                  color: isDark ? Colors.white60 : Colors.grey.shade500,
+                  size: 20,
+                ),
                 border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 14,
+                ),
               ),
               onSubmitted: (value) {
                 if (value.isNotEmpty) {
@@ -56,7 +71,7 @@ class _WeatherSearchBarState extends State<WeatherSearchBar> {
             ),
           ),
         ),
-        const SizedBox(width: 8),
+        const SizedBox(width: 10),
         ElevatedButton(
           onPressed: () {
             if (_controller.text.isNotEmpty) {
@@ -69,11 +84,15 @@ class _WeatherSearchBarState extends State<WeatherSearchBar> {
             backgroundColor: const Color(0xFF1B4F8A),
             foregroundColor: Colors.white,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(16),
             ),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+            elevation: 0,
           ),
-          child: const Text('Search'),
+          child: const Text(
+            'Search',
+            style: TextStyle(fontWeight: FontWeight.w600),
+          ),
         ),
       ],
     );

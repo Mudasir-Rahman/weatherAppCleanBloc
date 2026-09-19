@@ -7,12 +7,10 @@ import 'package:weather_app_bloc/features/weather/Presentation/bloc/weather_even
 import 'package:weather_app_bloc/features/weather/domain/entity/weather_entity.dart';
 import 'package:weather_app_bloc/features/weather/Presentation/bloc/weather_bloc.dart';
 
-
 import '../../../ forecast/domain/entity/forecast_entity.dart';
 import '../../../ forecast/presentation/forecost_event.dart';
 import '../../../ forecast/presentation/forecostbloc_bloc.dart';
 import '../../../ forecast/presentation/widget/forecast_strip.dart';
-
 
 class WeatherCard extends StatelessWidget {
   final WeatherEntity weather;
@@ -119,17 +117,17 @@ class WeatherCard extends StatelessWidget {
               'Current location',
               style: TextStyle(
                 fontSize: 12,
-                fontWeight: FontWeight.w500,
-                letterSpacing: 1,
-                color: Colors.white.withOpacity(0.55),
+                fontWeight: FontWeight.w600,
+                letterSpacing: 1.2,
+                color: Colors.white.withOpacity(0.6),
               ),
             ),
             const SizedBox(height: 4),
             Text(
               weather.cityName,
               style: const TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.w500,
+                fontSize: 24,
+                fontWeight: FontWeight.w700,
                 color: Colors.white,
               ),
             ),
@@ -139,30 +137,48 @@ class WeatherCard extends StatelessWidget {
           children: [
             GestureDetector(
               onTap: () {
-                context.read<WeatherBloc>().add(const FetchWeatherByLocationEvent());
-                context.read<ForecastBloc>().add(const GetForecastByLocationEvent());
+                context.read<WeatherBloc>().add(
+                  const FetchWeatherByLocationEvent(),
+                );
+                context.read<ForecastBloc>().add(
+                  const GetForecastByLocationEvent(),
+                );
               },
               child: Container(
-                width: 34,
-                height: 34,
+                width: 38,
+                height: 38,
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.12),
                   borderRadius: BorderRadius.circular(50),
-                  border: Border.all(color: Colors.white.withOpacity(0.2), width: 0.5),
+                  border: Border.all(
+                    color: Colors.white.withOpacity(0.2),
+                    width: 0.5,
+                  ),
                 ),
-                child: const Icon(Icons.my_location, color: Colors.white, size: 16),
+                child: const Icon(
+                  Icons.my_location_rounded,
+                  color: Colors.white,
+                  size: 18,
+                ),
               ),
             ),
             const SizedBox(width: 8),
             Container(
-              width: 34,
-              height: 34,
+              width: 38,
+              height: 38,
               decoration: BoxDecoration(
                 color: Colors.white.withOpacity(0.12),
                 borderRadius: BorderRadius.circular(50),
-                border: Border.all(color: Colors.white.withOpacity(0.2), width: 0.5),
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.2),
+                  width: 0.5,
+                ),
               ),
-              child: const Icon(Icons.more_horiz, color: Colors.white, size: 16),
+              child: const Icon(
+                Icons.more_horiz_rounded,
+                color: Colors.white,
+                size: 18,
+              ),
             ),
           ],
         ),
@@ -228,10 +244,7 @@ class WeatherCard extends StatelessWidget {
     final now = DateTime.now();
     return Text(
       '${_getDayName(now.weekday)}, ${now.day} ${_getMonthName(now.month)} ${now.year}',
-      style: TextStyle(
-        fontSize: 13,
-        color: Colors.white.withOpacity(0.5),
-      ),
+      style: TextStyle(fontSize: 13, color: Colors.white.withOpacity(0.5)),
     );
   }
 
@@ -239,25 +252,34 @@ class WeatherCard extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _buildDetailItem(
-          icon: Icons.water_drop,
-          value: '${weather.humidity}%',
-          label: 'Humidity',
+        Expanded(
+          child: _buildDetailItem(
+            icon: Icons.water_drop_rounded,
+            value: '${weather.humidity}%',
+            label: 'Humidity',
+          ),
         ),
-        _buildDetailItem(
-          icon: Icons.air,
-          value: '${_getWindDirection(weather.windDeg)} ${weather.windSpeed.toInt()}',
-          label: 'Wind km/h',
+        Expanded(
+          child: _buildDetailItem(
+            icon: Icons.air_rounded,
+            value:
+                '${_getWindDirection(weather.windDeg)} ${weather.windSpeed.toInt()}',
+            label: 'Wind',
+          ),
         ),
-        _buildDetailItem(
-          icon: Icons.speed,
-          value: '${weather.pressure}',
-          label: 'hPa',
+        Expanded(
+          child: _buildDetailItem(
+            icon: Icons.speed_rounded,
+            value: '${weather.pressure}',
+            label: 'Pressure',
+          ),
         ),
-        _buildDetailItem(
-          icon: Icons.visibility,
-          value: '10 km',
-          label: 'Visibility',
+        Expanded(
+          child: _buildDetailItem(
+            icon: Icons.visibility_rounded,
+            value: '10 km',
+            label: 'Visibility',
+          ),
         ),
       ],
     );
@@ -298,13 +320,33 @@ class WeatherCard extends StatelessWidget {
   }
 
   String _getDayName(int weekday) {
-    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    const days = [
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+      'Sunday',
+    ];
     return days[weekday - 1];
   }
 
   String _getMonthName(int month) {
-    const months = ['January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'];
+    const months = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
+    ];
     return months[month - 1];
   }
 }

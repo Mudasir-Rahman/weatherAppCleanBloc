@@ -133,6 +133,34 @@ class AppTheme {
         : lightBackgroundGradient;
   }
 
+  // Weather-specific dynamic gradients
+  static LinearGradient getWeatherBackgroundGradient(String iconCode, Brightness brightness) {
+    bool isDark = brightness == Brightness.dark;
+    if (iconCode.startsWith('01')) {
+      // Clear / Sunny
+      return isDark
+          ? const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF1A2A6C), Color(0xFFB21F1F)])
+          : const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFFFF7E5F), Color(0xFFFEB47B)]);
+    } else if (iconCode.startsWith('02') || iconCode.startsWith('03') || iconCode.startsWith('04')) {
+      // Cloudy
+      return isDark
+          ? const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF232526), Color(0xFF414345)])
+          : const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF617C58), Color(0xFF93B874)]);
+    } else if (iconCode.startsWith('09') || iconCode.startsWith('10')) {
+      // Rainy
+      return isDark
+          ? const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF0F2027), Color(0xFF203A43)])
+          : const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF3A7BD5), Color(0xFF3A6073)]);
+    } else if (iconCode.startsWith('11')) {
+      // Thunderstorm
+      return const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF141E30), Color(0xFF243B55)]);
+    } else if (iconCode.startsWith('13')) {
+      // Snowy
+      return const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF83A4D4), Color(0xFFB6FBFF)]);
+    }
+    return getBackgroundGradient(brightness);
+  }
+
   // Get colors based on brightness
   static Color getTextColor(Brightness brightness) {
     return brightness == Brightness.dark ? Colors.white : Colors.black87;

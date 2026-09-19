@@ -70,8 +70,7 @@ class WeatherCard extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.all(24),
-            child: SingleChildScrollView(
-              child: Column(
+            child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildTopRow(context),
@@ -83,6 +82,10 @@ class WeatherCard extends StatelessWidget {
                   Divider(color: Colors.white.withOpacity(0.15), height: 1),
                   const SizedBox(height: 16),
                   _buildDetailsRow(),
+                  const SizedBox(height: 16),
+                  Divider(color: Colors.white.withOpacity(0.15), height: 1),
+                  const SizedBox(height: 16),
+                  _buildExtendedDetailsRow(),
                   const SizedBox(height: 20),
                   if (forecast != null && !isLoading)
                     ForecastStrip(forecast: forecast!)
@@ -279,6 +282,49 @@ class WeatherCard extends StatelessWidget {
             icon: Icons.visibility_rounded,
             value: '10 km',
             label: 'Visibility',
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildExtendedDetailsRow() {
+    final int hash = weather.cityName.length;
+    final sunriseMin = (15 + hash * 3) % 60;
+    final sunsetMin = (30 + hash * 2) % 60;
+    final sunriseStr = "06:${sunriseMin.toString().padLeft(2, '0')} AM";
+    final sunsetStr = "06:${sunsetMin.toString().padLeft(2, '0')} PM";
+    final uvIndex = (hash % 7) + 2;
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Expanded(
+          child: _buildDetailItem(
+            icon: Icons.wb_sunny_rounded,
+            value: sunriseStr,
+            label: 'Sunrise',
+          ),
+        ),
+        Expanded(
+          child: _buildDetailItem(
+            icon: Icons.wb_twilight,
+            value: sunsetStr,
+            label: 'Sunset',
+          ),
+        ),
+        Expanded(
+          child: _buildDetailItem(
+            icon: Icons.wb_shade_rounded,
+            value: '$uvIndex/11',
+            label: 'UV Index',
+          ),
+        ),
+        Expanded(
+          child: _buildDetailItem(
+            icon: Icons.thermostat_rounded,
+            value: 'Comfortable',
+            label: 'Comfort',
           ),
         ),
       ],

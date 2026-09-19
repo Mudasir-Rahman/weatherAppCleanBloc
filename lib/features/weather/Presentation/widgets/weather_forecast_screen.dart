@@ -23,6 +23,8 @@ class WeatherForecastScreen extends StatefulWidget {
 }
 
 class _WeatherForecastScreenState extends State<WeatherForecastScreen> {
+  final List<String> _favoriteCities = ['London', 'New York', 'Paris', 'Tokyo'];
+
   @override
   void initState() {
     super.initState();
@@ -46,106 +48,230 @@ class _WeatherForecastScreenState extends State<WeatherForecastScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final gradient = AppTheme.getBackgroundGradient(
-      isDark ? Brightness.dark : Brightness.light,
-    );
 
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(gradient: gradient),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                _buildHeader(context),
-                const SizedBox(height: 12),
-                WeatherSearchBar(onSearch: _searchCity),
-                const SizedBox(height: 12),
-                const UnitToggle(),
-                const SizedBox(height: 12),
-                Expanded(
-                  child: BlocBuilder<WeatherBloc, WeatherState>(
-                    builder: (context, weatherState) {
-                      if (weatherState is WeatherLoading) {
-                        return const Center(child: CircularProgressIndicator());
-                      }
-                      if (weatherState is WeatherLoaded) {
-                        return BlocBuilder<ForecastBloc, ForecostState>(
-                          builder: (context, forecastState) {
-                            return WeatherCard(
-                              weather: weatherState.weather,
-                              forecast: forecastState is ForecostLoaded
-                                  ? forecastState.forecast
-                                  : null,
-                              isLoading: forecastState is ForecostLoading,
-                            );
-                          },
-                        );
-                      }
-                      if (weatherState is WeatherError) {
-                        return Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.error_outline,
-                                size: 48,
-                                color: isDark
-                                    ? Colors.white70
-                                    : Colors.grey.shade600,
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                weatherState.message,
-                                style: TextStyle(
-                                  color: isDark
-                                      ? Colors.white70
-                                      : Colors.grey.shade600,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                              const SizedBox(height: 12),
-                              ElevatedButton(
-                                onPressed: _loadData,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFF1B4F8A),
-                                  foregroundColor: Colors.white,
-                                ),
-                                child: const Text('Retry'),
-                              ),
-                            ],
-                          ),
-                        );
-                      }
-                      return Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.cloud_queue,
-                              size: 64,
-                              color: isDark ? Colors.white54 : Colors.grey,
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              'Tap location button\nfor weather',
-                              style: TextStyle(
-                                color: isDark ? Colors.white54 : Colors.grey,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
+    return BlocBuilder<WeatherBloc, WeatherState>(
+      builder: (context, weatherState) {
+        // Dynamic background gradient based on weather condition
+        LinearGradient gradient = AppTheme.getBackgroundGradient(
+          isDark ? Brightness.dark : Brightness.light,
+        );
+        String currentCity = '';
+        if (weatherState is WeatherLoaded) {
+          gradient = AppTheme.getWeatherBackgroundGradient(
+            weatherState.weather.iconCode,
+            isDark ? Brightness.dark : Brightness.light,
+          );
+          currentCity = weatherState.weather.cityName;
+        }
+
+        return Scaffold(
+          body: Container(
+            decoration: BoxDecoration(gradient: gradient),
+            child: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    _buildHeader(context),
+                    const SizedBox(height: 12),
+                    WeatherSearchBar(onSearch: _searchCity),
+                    const SizedBox(height: 12),
+                    _buildFavoritesRow(currentCity),
+                    const SizedBox(height: 12),
+                    const UnitToggle(),
+                    const SizedBox(height: 12),
+                    Expanded(
+                      child: RefreshIndicator(
+                        onRefresh: () async {
+                          if (currentCity.isNotEmpty) {
+                            _searchCity(currentCity);
+                          } else {
+                            _loadData();
+                          }
+                          await Future.delayed(const Duration(milliseconds: 500));
+                        },
+                        color: const Color(0xFF1B4F8A),
+                        child: SingleChildScrollView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          child: _buildMainContent(weatherState, isDark),
                         ),
-                      );
-                    },
-                  ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
+        );
+      },
+    );
+  }
+
+  Widget _buildMainContent(WeatherState weatherState, bool isDark) {
+    if (weatherState is WeatherLoading) {
+      return const SizedBox(
+        height: 400,
+        child: Center(child: CircularProgressIndicator(color: Colors.white)),
+      );
+    }
+    if (weatherState is WeatherLoaded) {
+      return BlocBuilder<ForecastBloc, ForecostState>(
+        builder: (context, forecastState) {
+          return WeatherCard(
+            weather: weatherState.weather,
+            forecast: forecastState is ForecostLoaded
+                ? forecastState.forecast
+                : null,
+            isLoading: forecastState is ForecostLoading,
+          );
+        },
+      );
+    }
+    if (weatherState is WeatherError) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 60),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.error_outline,
+                size: 48,
+                color: isDark ? Colors.white70 : Colors.grey.shade600,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                weatherState.message,
+                style: TextStyle(
+                  color: isDark ? Colors.white70 : Colors.grey.shade600,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: _loadData,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF1B4F8A),
+                  foregroundColor: Colors.white,
+                ),
+                child: const Text('Retry'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 60),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.cloud_queue,
+              size: 64,
+              color: isDark ? Colors.white54 : Colors.grey,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Tap location button\nfor weather',
+              style: TextStyle(
+                color: isDark ? Colors.white54 : Colors.grey,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
         ),
       ),
+    );
+  }
+
+  Widget _buildFavoritesRow(String currentCity) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bool isFavorite = currentCity.isNotEmpty &&
+        _favoriteCities.any((city) => city.toLowerCase() == currentCity.toLowerCase());
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Favorite Cities',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: isDark ? Colors.white70 : Colors.black54,
+              ),
+            ),
+            if (currentCity.isNotEmpty)
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    if (isFavorite) {
+                      _favoriteCities.removeWhere((city) => city.toLowerCase() == currentCity.toLowerCase());
+                    } else {
+                      _favoriteCities.add(currentCity);
+                    }
+                  });
+                },
+                child: Row(
+                  children: [
+                    Icon(
+                      isFavorite ? Icons.star_rounded : Icons.star_outline_rounded,
+                      color: Colors.amber,
+                      size: 18,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      isFavorite ? 'Saved' : 'Add to Favorites',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: isDark ? Colors.white60 : Colors.black54,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+          ],
+        ),
+        const SizedBox(height: 6),
+        SizedBox(
+          height: 38,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: _favoriteCities.length,
+            itemBuilder: (context, index) {
+              final city = _favoriteCities[index];
+              final bool isSelected = currentCity.toLowerCase() == city.toLowerCase();
+              return Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: ChoiceChip(
+                  label: Text(city),
+                  selected: isSelected,
+                  onSelected: (selected) {
+                    if (selected) {
+                      _searchCity(city);
+                    }
+                  },
+                  labelStyle: TextStyle(
+                    color: isSelected ? Colors.white : (isDark ? Colors.white70 : Colors.black87),
+                    fontSize: 12,
+                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                  ),
+                  selectedColor: const Color(0xFF1B4F8A),
+                  backgroundColor: isDark ? Colors.white.withOpacity(0.08) : Colors.black.withOpacity(0.04),
+                  checkmarkColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 

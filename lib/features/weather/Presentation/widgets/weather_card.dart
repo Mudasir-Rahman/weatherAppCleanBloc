@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:weather_app_bloc/core/temperature/temperature_cubit.dart';
 import 'package:weather_app_bloc/core/utils/temperature_utils.dart';
+import 'package:weather_app_bloc/core/utils/weather_activity_recommendation.dart';
 import 'package:weather_app_bloc/core/theme/app_theme.dart';
 import 'package:weather_app_bloc/features/weather/Presentation/bloc/weather_event.dart';
 import 'package:weather_app_bloc/features/weather/domain/entity/weather_entity.dart';
@@ -11,6 +12,7 @@ import '../../../ forecast/domain/entity/forecast_entity.dart';
 import '../../../ forecast/presentation/forecost_event.dart';
 import '../../../ forecast/presentation/forecostbloc_bloc.dart';
 import '../../../ forecast/presentation/widget/forecast_strip.dart';
+import '../../../ forecast/presentation/widget/hourly_forecast_strip.dart';
 
 class WeatherCard extends StatelessWidget {
   final WeatherEntity weather;
@@ -71,38 +73,110 @@ class WeatherCard extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(24),
             child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildTopRow(context),
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildTopRow(context),
+                const SizedBox(height: 18),
+                _buildTemperatureRow(context),
+                const SizedBox(height: 6),
+                _buildDayDate(),
+                const SizedBox(height: 16),
+                Divider(color: Colors.white.withOpacity(0.15), height: 1),
+                const SizedBox(height: 16),
+                _buildDetailsRow(),
+                const SizedBox(height: 16),
+                Divider(color: Colors.white.withOpacity(0.15), height: 1),
+                const SizedBox(height: 16),
+                _buildExtendedDetailsRow(),
+                const SizedBox(height: 20),
+                if (forecast != null && !isLoading) ...[
+                  _buildSectionLabel('Next hours'),
+                  const SizedBox(height: 10),
+                  HourlyForecastStrip(forecast: forecast!),
                   const SizedBox(height: 18),
-                  _buildTemperatureRow(context),
-                  const SizedBox(height: 6),
-                  _buildDayDate(),
-                  const SizedBox(height: 16),
-                  Divider(color: Colors.white.withOpacity(0.15), height: 1),
-                  const SizedBox(height: 16),
-                  _buildDetailsRow(),
-                  const SizedBox(height: 16),
-                  Divider(color: Colors.white.withOpacity(0.15), height: 1),
-                  const SizedBox(height: 16),
-                  _buildExtendedDetailsRow(),
+                  _buildSectionLabel('7-day outlook'),
+                  const SizedBox(height: 10),
+                  ForecastStrip(forecast: forecast!),
                   const SizedBox(height: 20),
-                  if (forecast != null && !isLoading)
-                    ForecastStrip(forecast: forecast!)
-                  else if (isLoading)
-                    const Center(
-                      child: CircularProgressIndicator(color: Colors.white),
-                    )
-                  else
-                    const Center(
-                      child: Text(
-                        'No forecast available',
-                        style: TextStyle(color: Colors.white54),
-                      ),
+                  _buildRecommendation(),
+                ] else if (isLoading)
+                  const Center(
+                    child: CircularProgressIndicator(color: Colors.white),
+                  )
+                else
+                  const Center(
+                    child: Text(
+                      'No forecast available',
+                      style: TextStyle(color: Colors.white54),
                     ),
-                ],
-              ),
+                  ),
+              ],
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSectionLabel(String label) {
+    return Text(
+      label.toUpperCase(),
+      style: TextStyle(
+        color: Colors.white.withOpacity(0.62),
+        fontSize: 11,
+        fontWeight: FontWeight.w700,
+        letterSpacing: 1.1,
+      ),
+    );
+  }
+
+  Widget _buildRecommendation() {
+    final recommendation = WeatherActivityRecommendation.fromWeather(weather);
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.white.withOpacity(0.12)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(recommendation.icon, color: Colors.white, size: 24),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  recommendation.title,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 14,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  recommendation.message,
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.7),
+                    fontSize: 12,
+                    height: 1.35,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  recommendation.action,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );

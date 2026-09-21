@@ -10,15 +10,20 @@ class ForecastStrip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: forecast.forecastList.asMap().entries.map((entry) {
-        final index = entry.key;
-        final item = entry.value;
-        final isToday = index == 0;
-        return Expanded(
-          child: ForecastItem(forecast: item, isToday: isToday),
-        );
-      }).toList(),
+    return SizedBox(
+      height: 92,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: forecast.forecastList.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 8),
+        itemBuilder: (context, index) => SizedBox(
+          width: 70,
+          child: ForecastItem(
+            forecast: forecast.forecastList[index],
+            isToday: index == 0,
+          ),
+        ),
+      ),
     );
   }
 }

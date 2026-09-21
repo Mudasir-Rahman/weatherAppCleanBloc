@@ -94,7 +94,11 @@ class WeatherCard extends StatelessWidget {
                   const SizedBox(height: 10),
                   HourlyForecastStrip(forecast: forecast!),
                   const SizedBox(height: 18),
-                  _buildSectionLabel('7-day outlook'),
+                  _buildSectionLabel(
+                    forecast!.forecastList.length >= 7
+                        ? '7-day outlook'
+                        : '${forecast!.forecastList.length}-day outlook',
+                  ),
                   const SizedBox(height: 10),
                   ForecastStrip(forecast: forecast!),
                   const SizedBox(height: 20),

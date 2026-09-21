@@ -5,10 +5,8 @@ import 'core/theme/app_theme.dart';
 import 'core/theme/theme_cubit.dart';
 import 'core/temperature/temperature_cubit.dart';
 import 'package:weather_app_bloc/features/weather/Presentation/bloc/weather_bloc.dart';
-import 'package:weather_app_bloc/features/weather/Presentation/bloc/weather_event.dart';
 import 'package:weather_app_bloc/features/weather/Presentation/widgets/weather_forecast_screen.dart';
 import 'features/ forecast/presentation/forecostbloc_bloc.dart';
-import 'features/ forecast/presentation/forecost_event.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,14 +23,8 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider(create: (context) => ThemeCubit()),
         BlocProvider(create: (context) => TemperatureCubit()),
-        BlocProvider(
-          create: (context) => di.sl<WeatherBloc>()
-            ..add(const FetchWeatherByLocationEvent()),
-        ),
-        BlocProvider(
-          create: (context) => di.sl<ForecastBloc>()
-            ..add(const GetForecastByLocationEvent()),
-        ),
+        BlocProvider(create: (context) => di.sl<WeatherBloc>()),
+        BlocProvider(create: (context) => di.sl<ForecastBloc>()),
       ],
       child: BlocBuilder<ThemeCubit, ThemeMode>(
         builder: (context, themeMode) {

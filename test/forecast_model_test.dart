@@ -4,20 +4,26 @@ import 'package:weather_app_bloc/features/%20forecast/data/model/forecost_model.
 void main() {
   test('parses hourly records and seven daily records from One Call data', () {
     final forecast = ForecastModel.fromJson({
-      'daily': List.generate(8, (index) => {
-        'dt': 1_700_000_000 + index * 86400,
-        'temp': {'min': 8 + index, 'max': 18 + index},
-        'weather': [
-          {'icon': '01d', 'description': 'clear sky'},
-        ],
-      }),
-      'hourly': List.generate(14, (index) => {
-        'dt': 1_700_000_000 + index * 3600,
-        'temp': 15 + index,
-        'weather': [
-          {'icon': '02d', 'description': 'few clouds'},
-        ],
-      }),
+      'daily': List.generate(
+        8,
+        (index) => {
+          'dt': 1_700_000_000 + index * 86400,
+          'temp': {'min': 8 + index, 'max': 18 + index},
+          'weather': [
+            {'icon': '01d', 'description': 'clear sky'},
+          ],
+        },
+      ),
+      'hourly': List.generate(
+        14,
+        (index) => {
+          'dt': 1_700_000_000 + index * 3600,
+          'temp': 15 + index,
+          'weather': [
+            {'icon': '02d', 'description': 'few clouds'},
+          ],
+        },
+      ),
     }, cityNameOverride: 'London');
 
     expect(forecast.cityName, 'London');

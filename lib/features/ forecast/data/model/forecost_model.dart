@@ -26,7 +26,9 @@ class ForecastModel extends ForecastEntity {
 
     if (json['list'] != null) {
       for (var item in json['list']) {
-        final date = DateTime.parse(item['dt_txt']);
+        if (item is! Map<String, dynamic>) continue;
+        final date = DateTime.tryParse(item['dt_txt'] as String? ?? '');
+        if (date == null) continue;
         final dayKey = '${date.year}-${date.month}-${date.day}';
 
         if (!groupedByDay.containsKey(dayKey)) {
@@ -63,7 +65,8 @@ class ForecastModel extends ForecastEntity {
         description = desc;
       }
 
-      final date = DateTime.parse(items[0]['dt_txt']);
+      final date = DateTime.tryParse(items[0]['dt_txt'] as String? ?? '');
+      if (date == null) continue;
       final dayName = _getDayName(date.weekday);
 
       forecastList.add(
@@ -89,38 +92,53 @@ class ForecastModel extends ForecastEntity {
     final items = json['hourly'] is List
         ? json['hourly'] as List
         : json['list'] as List? ?? [];
-    return items.take(12).map((item) {
-      final time = item['dt'] is num
-          ? DateTime.fromMillisecondsSinceEpoch(
-              (item['dt'] as num).toInt() * 1000,
-              isUtc: true,
-            ).toLocal()
-          : DateTime.parse(item['dt_txt'] as String);
-      return HourlyForecastItem(
-        time: time,
-        temperature: _temperature(item),
-        iconCode: _icon(item),
-        description: _description(item),
-      );
-    }).toList();
+    return items
+        .take(12)
+        .whereType<Map<String, dynamic>>()
+        .map((item) {
+          final time = _parseTime(item);
+          if (time == null) return null;
+          return HourlyForecastItem(
+            time: time,
+            temperature: _temperature(item),
+            iconCode: _icon(item),
+            description: _description(item),
+          );
+        })
+        .whereType<HourlyForecastItem>()
+        .toList();
   }
 
   static List<ForecastItems> _parseDailyItems(List items) {
-    return items.take(7).map((item) {
-      final date = DateTime.fromMillisecondsSinceEpoch(
+    return items
+        .take(7)
+        .whereType<Map<String, dynamic>>()
+        .map((item) {
+          final date = _parseTime(item);
+          if (date == null) return null;
+          final temp = item['temp'] as Map<String, dynamic>? ?? {};
+          return ForecastItems(
+            dayName: _getDayName(date.weekday),
+            date: date,
+            maxTemp: (temp['max'] ?? 0).toDouble(),
+            minTemp: (temp['min'] ?? 0).toDouble(),
+            iconCode: _icon(item),
+            description: _description(item),
+          );
+        })
+        .whereType<ForecastItems>()
+        .toList();
+  }
+
+  static DateTime? _parseTime(Map<String, dynamic> item) {
+    if (item['dt'] is num) {
+      return DateTime.fromMillisecondsSinceEpoch(
         (item['dt'] as num).toInt() * 1000,
         isUtc: true,
       ).toLocal();
-      final temp = item['temp'] as Map<String, dynamic>? ?? {};
-      return ForecastItems(
-        dayName: _getDayName(date.weekday),
-        date: date,
-        maxTemp: (temp['max'] ?? 0).toDouble(),
-        minTemp: (temp['min'] ?? 0).toDouble(),
-        iconCode: _icon(item),
-        description: _description(item),
-      );
-    }).toList();
+    }
+    final text = item['dt_txt'];
+    return text is String ? DateTime.tryParse(text) : null;
   }
 
   static double _temperature(Map<String, dynamic> item) {

@@ -21,9 +21,7 @@ class AppTheme {
     cardTheme: CardThemeData(
       color: Colors.white,
       elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
@@ -41,9 +39,7 @@ class AppTheme {
       style: ElevatedButton.styleFrom(
         backgroundColor: const Color(0xFF1B4F8A),
         foregroundColor: Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
     ),
   );
@@ -68,9 +64,7 @@ class AppTheme {
     cardTheme: CardThemeData(
       color: Colors.white.withOpacity(0.05),
       elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
@@ -88,9 +82,7 @@ class AppTheme {
       style: ElevatedButton.styleFrom(
         backgroundColor: const Color(0xFF1B4F8A),
         foregroundColor: Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
     ),
   );
@@ -122,9 +114,7 @@ class AppTheme {
 
   // Get gradient based on brightness
   static LinearGradient getCardGradient(Brightness brightness) {
-    return brightness == Brightness.dark
-        ? darkCardGradient
-        : lightCardGradient;
+    return brightness == Brightness.dark ? darkCardGradient : lightCardGradient;
   }
 
   static LinearGradient getBackgroundGradient(Brightness brightness) {
@@ -134,29 +124,66 @@ class AppTheme {
   }
 
   // Weather-specific dynamic gradients
-  static LinearGradient getWeatherBackgroundGradient(String iconCode, Brightness brightness) {
+  static LinearGradient getWeatherBackgroundGradient(
+    String iconCode,
+    Brightness brightness,
+  ) {
     bool isDark = brightness == Brightness.dark;
     if (iconCode.startsWith('01')) {
       // Clear / Sunny
       return isDark
-          ? const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF1A2A6C), Color(0xFFB21F1F)])
-          : const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFFFF7E5F), Color(0xFFFEB47B)]);
-    } else if (iconCode.startsWith('02') || iconCode.startsWith('03') || iconCode.startsWith('04')) {
+          ? const LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xFF123B5D), Color(0xFF087E8B)],
+            )
+          : const LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xFF2E86AB), Color(0xFF67C8C2)],
+            );
+    } else if (iconCode.startsWith('02') ||
+        iconCode.startsWith('03') ||
+        iconCode.startsWith('04')) {
       // Cloudy
       return isDark
-          ? const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF232526), Color(0xFF414345)])
-          : const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF617C58), Color(0xFF93B874)]);
+          ? const LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xFF232526), Color(0xFF414345)],
+            )
+          : const LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xFF617C58), Color(0xFF93B874)],
+            );
     } else if (iconCode.startsWith('09') || iconCode.startsWith('10')) {
       // Rainy
       return isDark
-          ? const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF0F2027), Color(0xFF203A43)])
-          : const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF3A7BD5), Color(0xFF3A6073)]);
+          ? const LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xFF0F2027), Color(0xFF203A43)],
+            )
+          : const LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color(0xFF3A7BD5), Color(0xFF3A6073)],
+            );
     } else if (iconCode.startsWith('11')) {
       // Thunderstorm
-      return const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF141E30), Color(0xFF243B55)]);
+      return const LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [Color(0xFF141E30), Color(0xFF243B55)],
+      );
     } else if (iconCode.startsWith('13')) {
       // Snowy
-      return const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Color(0xFF83A4D4), Color(0xFFB6FBFF)]);
+      return const LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [Color(0xFF83A4D4), Color(0xFFB6FBFF)],
+      );
     }
     return getBackgroundGradient(brightness);
   }

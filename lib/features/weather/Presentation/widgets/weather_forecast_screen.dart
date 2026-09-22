@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:weather_app_bloc/core/theme/app_theme.dart';
 import 'package:weather_app_bloc/core/theme/theme_cubit.dart';
 
@@ -23,12 +24,31 @@ class WeatherForecastScreen extends StatefulWidget {
 }
 
 class _WeatherForecastScreenState extends State<WeatherForecastScreen> {
-  final List<String> _favoriteCities = ['London', 'New York', 'Paris', 'Tokyo'];
+  static const _favoriteCitiesKey = 'favorite_cities';
+  final List<String> _favoriteCities = [];
 
   @override
   void initState() {
     super.initState();
+    _loadFavorites();
     _loadData();
+  }
+
+  Future<void> _loadFavorites() async {
+    final preferences = await SharedPreferences.getInstance();
+    final savedCities = preferences.getStringList(_favoriteCitiesKey);
+    if (!mounted) return;
+
+    setState(() {
+      _favoriteCities
+        ..clear()
+        ..addAll(savedCities ?? ['London', 'New York', 'Paris', 'Tokyo']);
+    });
+  }
+
+  Future<void> _saveFavorites() async {
+    final preferences = await SharedPreferences.getInstance();
+    await preferences.setStringList(_favoriteCitiesKey, _favoriteCities);
   }
 
   void _loadData() {
@@ -88,7 +108,9 @@ class _WeatherForecastScreenState extends State<WeatherForecastScreen> {
                           } else {
                             _loadData();
                           }
-                          await Future.delayed(const Duration(milliseconds: 500));
+                          await Future.delayed(
+                            const Duration(milliseconds: 500),
+                          );
                         },
                         color: const Color(0xFF1B4F8A),
                         child: SingleChildScrollView(
@@ -175,9 +197,7 @@ class _WeatherForecastScreenState extends State<WeatherForecastScreen> {
             const SizedBox(height: 12),
             Text(
               'Tap location button\nfor weather',
-              style: TextStyle(
-                color: isDark ? Colors.white54 : Colors.grey,
-              ),
+              style: TextStyle(color: isDark ? Colors.white54 : Colors.grey),
               textAlign: TextAlign.center,
             ),
           ],
@@ -188,8 +208,11 @@ class _WeatherForecastScreenState extends State<WeatherForecastScreen> {
 
   Widget _buildFavoritesRow(String currentCity) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bool isFavorite = currentCity.isNotEmpty &&
-        _favoriteCities.any((city) => city.toLowerCase() == currentCity.toLowerCase());
+    final bool isFavorite =
+        currentCity.isNotEmpty &&
+        _favoriteCities.any(
+          (city) => city.toLowerCase() == currentCity.toLowerCase(),
+        );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -210,16 +233,22 @@ class _WeatherForecastScreenState extends State<WeatherForecastScreen> {
                 onTap: () {
                   setState(() {
                     if (isFavorite) {
-                      _favoriteCities.removeWhere((city) => city.toLowerCase() == currentCity.toLowerCase());
+                      _favoriteCities.removeWhere(
+                        (city) =>
+                            city.toLowerCase() == currentCity.toLowerCase(),
+                      );
                     } else {
                       _favoriteCities.add(currentCity);
                     }
                   });
+                  _saveFavorites();
                 },
                 child: Row(
                   children: [
                     Icon(
-                      isFavorite ? Icons.star_rounded : Icons.star_outline_rounded,
+                      isFavorite
+                          ? Icons.star_rounded
+                          : Icons.star_outline_rounded,
                       color: Colors.amber,
                       size: 18,
                     ),
@@ -244,7 +273,8 @@ class _WeatherForecastScreenState extends State<WeatherForecastScreen> {
             itemCount: _favoriteCities.length,
             itemBuilder: (context, index) {
               final city = _favoriteCities[index];
-              final bool isSelected = currentCity.toLowerCase() == city.toLowerCase();
+              final bool isSelected =
+                  currentCity.toLowerCase() == city.toLowerCase();
               return Padding(
                 padding: const EdgeInsets.only(right: 8),
                 child: ChoiceChip(
@@ -256,12 +286,18 @@ class _WeatherForecastScreenState extends State<WeatherForecastScreen> {
                     }
                   },
                   labelStyle: TextStyle(
-                    color: isSelected ? Colors.white : (isDark ? Colors.white70 : Colors.black87),
+                    color: isSelected
+                        ? Colors.white
+                        : (isDark ? Colors.white70 : Colors.black87),
                     fontSize: 12,
-                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                    fontWeight: isSelected
+                        ? FontWeight.bold
+                        : FontWeight.normal,
                   ),
                   selectedColor: const Color(0xFF1B4F8A),
-                  backgroundColor: isDark ? Colors.white.withOpacity(0.08) : Colors.black.withOpacity(0.04),
+                  backgroundColor: isDark
+                      ? Colors.white.withOpacity(0.08)
+                      : Colors.black.withOpacity(0.04),
                   checkmarkColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
